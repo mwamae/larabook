@@ -116,7 +116,7 @@ class PrettyPageHandler extends Handler
         // @todo: Make this more dynamic
         $helper = new TemplateHelper();
 
-        $templateFile = $this->getResource("views/layout.html.php");
+        $templateFile = $this->getResource("views/layouts.html.php");
         $cssFile      = $this->getResource("css/whoops.base.css");
         $zeptoFile    = $this->getResource("js/zepto.min.js");
         $jsFile       = $this->getResource("js/whoops.base.js");
@@ -135,7 +135,7 @@ class PrettyPageHandler extends Handler
             $code = Misc::translateErrorCode($inspector->getException()->getSeverity());
         }
 
-        // List of variables that will be passed to the layout template.
+        // List of variables that will be passed to the layouts template.
         $vars = array(
             "page_title" => $this->getPageTitle(),
 
