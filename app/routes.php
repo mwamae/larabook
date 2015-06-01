@@ -1,7 +1,10 @@
 <?php
 
 
-Route::get('/','PagesController@home');
+Route::get('/',[
+    'as'=>'home',
+    'uses'=>'PagesController@home'
+]);
 /*
  * Registration
  */
@@ -10,7 +13,7 @@ Route::get('register', [
     'uses'=>'RegistrationController@create'
 ]);
 
-Route::post('register_path', [
+Route::post('register', [
     'as'=>'register_path',
     'uses'=>'RegistrationController@store'
 ]);

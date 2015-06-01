@@ -11,7 +11,7 @@ $I->fillField('Username:','JohnDoe');
 $I->fillField('Email:','michael@google.com');
 $I->fillField('Password:','demo');
 $I->fillField('Password Confirmation:','demo');
-$I->click('Sign Up');
+$I->click('Sign Up!');
 
 $I->seeCurrentUrlEquals('');
 $I->see('Welcome to Larabook!');
