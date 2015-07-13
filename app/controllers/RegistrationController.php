@@ -1,13 +1,27 @@
 <?php
 
-class RegistrationController extends \BaseController {
+use Larabook\Forms\RegistrationForm;
+use Larabook\Registration\RegisterUserCommand;
+
+class RegistrationController extends \BaseController  {
 
 
-	/**
-	 * Show the form for register a user.
-	 *
+    private $registrationForm;
+
+    function __construct(RegistrationForm $registrationForm)
+    {
+        $this->registrationForm = $registrationForm;
+
+        $this->beforeFilter('guest');
+    }
+
+
+    /**
+	 * Show the form for register a user
 	 * @return Response
 	 */
+
+
 	public function create()
 	{
 		//
@@ -16,15 +30,18 @@ class RegistrationController extends \BaseController {
 
     public function store()
     {
-        $user = User::create(
-            Input::only('username','email','password')
-        );
+        $this->registrationForm->validate(Input::all());
+
+        $user = $this->execute(RegisterUserCommand::class);
 
         Auth::login($user);
 
-       return Redirect::home();
-    }
+        Flash::success('Glad to have you as a Larabook Member');
 
+
+        return Redirect::home()->with('flash_message', 'Welcome Aboard');
+
+    }
 
 }
 

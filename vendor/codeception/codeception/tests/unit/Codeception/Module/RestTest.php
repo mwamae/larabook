@@ -15,19 +15,19 @@ class RestTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-
         $connector = new \Codeception\Lib\Connector\Universal();
-        $connector->setIndex(\Codeception\Configuration::dataDir().'/rest/index.php');
+        $connector->setIndex(\Codeception\Configuration::dataDir() . '/rest/index.php');
 
+        $connectionModule = new \Codeception\Module\PhpBrowser();
+        $connectionModule->client = $connector;
         $this->module = Stub::make(
             '\Codeception\Module\REST',
             [
-                'getModules' => [new \Codeception\Module\PhpBrowser()]
+                'getModules' => [$connectionModule]
             ]
         );
         $this->module->_initialize();
         $this->module->_before(Stub::makeEmpty('\Codeception\TestCase\Cest'));
-        $this->module->client = $connector;
         $this->module->client->setServerParameters([
             'SCRIPT_FILENAME' => 'index.php',
             'SCRIPT_NAME' => 'index',
@@ -272,6 +272,15 @@ class RestTest extends \PHPUnit_Framework_TestCase
         $this->module->dontSeeResponseJsonMatchesJsonPath('$.store.book.*.invalidField');
     }
 
+    public function testApplicationJsonSubtypeIncludesObjectSerialized()
+    {
+        $this->module->haveHttpHeader('Content-Type', 'application/resource+json');
+        $this->module->sendPOST('/', new JsonSerializedItem());
+        /** @var $request \Symfony\Component\BrowserKit\Request  **/
+        $request = $this->module->client->getRequest();
+        $this->assertContains('application/resource+json', $request->getServer());
+        $this->assertJson($request->getContent());
+    }
 
     protected function shouldFail()
     {
@@ -285,6 +294,6 @@ class JsonSerializedItem implements JsonSerializable
 {
     public function jsonSerialize()
     {
-        return '{"hello": "world"}';
+        return array("hello" => "world");
     }
 }

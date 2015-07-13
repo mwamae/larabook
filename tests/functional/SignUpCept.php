@@ -4,6 +4,7 @@ $I->am('a guest');
 $I->wantTo('sign up for a Larabook account');
 
 $I->amOnPage('/');
+$I->see('Sign Up!');
 $I->click('Sign Up!');
 $I->seeCurrentUrlEquals('/register');
 
@@ -17,8 +18,10 @@ $I->seeCurrentUrlEquals('');
 $I->see('Welcome to Larabook!');
 
 $I->seeRecord('users', [
-    'username'=>'JohnDoe',
-    'email'=>'michael@google.com'
+    'username' => 'JohnDoe',
+    'email' => 'michael@google.com'
 ]);
 
-$I->assertTrue(Auth::check());
+
+
+$I->assertFalse(Auth::check());

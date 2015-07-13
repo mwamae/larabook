@@ -174,6 +174,7 @@ class RoboFile extends \Robo\Tasks
             ->name('*.ttf')
             ->name('*.wof')
             ->name('*.woff')
+            ->name('*.woff2')
             ->name('*.png')
             ->name('*.tpl.dist')
             ->name('*.html.dist')
@@ -320,7 +321,7 @@ class RoboFile extends \Robo\Tasks
         $branch = null;
         $releaseFile = $this->taskWriteToFile('builds.markdown')
             ->line('---')
-            ->line('layouts: page')
+            ->line('layout: page')
             ->line('title: Codeception Builds')
             ->line('---')
             ->line('');
@@ -370,7 +371,7 @@ class RoboFile extends \Robo\Tasks
 
         $this->taskWriteToFile('package/site/changelog.markdown')
             ->line('---')
-            ->line('layouts: page')
+            ->line('layout: page')
             ->line('title: Codeception Changelog')
             ->line('---')
             ->line('')
@@ -414,7 +415,7 @@ class RoboFile extends \Robo\Tasks
             if (preg_match('/^# (.*)$/m', $contents, $matches)) {
               $title = $matches[1];
             }
-            $contents = "---\nlayouts: doc\ntitle: ".($title!="" ? $title." - " : "")."Codeception - Documentation\n---\n\n".$contents;
+            $contents = "---\nlayout: doc\ntitle: ".($title!="" ? $title." - " : "")."Codeception - Documentation\n---\n\n".$contents;
             file_put_contents('package/site/' .$newfile, $contents);
         }
         chdir('package/site');

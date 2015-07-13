@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
+    <title>Larabook</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/main.css"/>
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
 
@@ -12,9 +12,28 @@
 
 
 <div class="container">
+    @include('flash::message')
+
     @yield('content')
 </div>
 
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<script>
+
+    $('#flash-overlay-modal').modal();
+
+    $('.comments__create-form').on('keydown', function(e){
+        if(e.keyCode==13)
+        {
+            e.preventDefault();
+
+            $(this).submit();
+        }
+    });
+
+</script>
 </body>
 </html>

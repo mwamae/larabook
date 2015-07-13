@@ -144,6 +144,17 @@ class Guzzle extends Client
 
     public function getAbsoluteUri($uri)
     {
+        if ($uri && 0 !== strpos($uri, 'http') && $uri[0] !== '/' && $this->redirect) {
+            $currentUri = $this->history->current()->getUri();
+            $path = parse_url($currentUri, PHP_URL_PATH);
+
+            if ('/' !== substr($path, -1)) {
+                $path = substr($path, 0, strrpos($path, '/') + 1);
+            }
+
+            $uri = $path.$uri;
+        }
+
         $build = parse_url($this->baseUri);
         $uriParts = parse_url(preg_replace('~^/+(?=/)~', '', $uri));
         
@@ -172,7 +183,7 @@ class Guzzle extends Client
             'headers' => $this->extractHeaders($request)
         ];
 
-        $requestOptions = array_merge_recursive($requestOptions, $this->requestOptions);
+        $requestOptions = array_replace_recursive($requestOptions, $this->requestOptions);
 
         $guzzleRequest = $this->client->createRequest(
             $request->getMethod(),
@@ -208,9 +219,9 @@ class Guzzle extends Client
             $server['HTTP_HOST'] .= ':' . $port;
         }
 
+        $contentHeaders = ['Content-Length' => true, 'Content-Md5' => true, 'Content-Type' => true];
         foreach ($server as $header => $val) {
             $header = implode('-', array_map('ucfirst', explode('-', strtolower(str_replace('_', '-', $header)))));
-            $contentHeaders = ['Content-length' => true, 'Content-md5' => true, 'Content-type' => true];
             if (strpos($header, 'Http-') === 0) {
                 $headers[substr($header, 5)] = $val;
             } elseif (isset($contentHeaders[$header])) {

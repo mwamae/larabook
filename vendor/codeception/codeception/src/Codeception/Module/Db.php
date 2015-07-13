@@ -69,14 +69,16 @@ namespace Codeception\Module;
  *
  */
 
+use Codeception\TestCase;
+use Codeception\Module;
 use Codeception\Lib\Driver\Db as Driver;
+use Codeception\Lib\Interfaces\Db as DbInterface;
 use Codeception\Exception\Module as ModuleException;
 use Codeception\Exception\ModuleConfig as ModuleConfigException;
 use Codeception\Configuration as Configuration;
 
-class Db extends \Codeception\Module implements \Codeception\Lib\Interfaces\Db
+class Db extends Module implements DbInterface
 {
-
     /**
      * @api
      * @var
@@ -138,7 +140,13 @@ class Db extends \Codeception\Module implements \Codeception\Lib\Interfaces\Db
         try {
             $this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password']);
         } catch (\PDOException $e) {
-            throw new ModuleException(__CLASS__, $e->getMessage() . ' while creating PDO connection');
+            $message = $e->getMessage();
+            if ($message === 'could not find driver') {
+                list ($missingDriver,) = explode(':', $this->config['dsn'],2);
+                $message = "could not find $missingDriver driver";
+            }
+
+            throw new ModuleException(__CLASS__, $message . ' while creating PDO connection');
         }
 
         $this->dbh = $this->driver->getDbh();
@@ -151,7 +159,7 @@ class Db extends \Codeception\Module implements \Codeception\Lib\Interfaces\Db
         }
     }
 
-    public function _before(\Codeception\TestCase $test)
+    public function _before(TestCase $test)
     {
         if ($this->config['cleanup'] && !$this->populated) {
             $this->cleanup();
@@ -160,7 +168,7 @@ class Db extends \Codeception\Module implements \Codeception\Lib\Interfaces\Db
         parent::_before($test);
     }
 
-    public function _after(\Codeception\TestCase $test)
+    public function _after(TestCase $test)
     {
         $this->populated = false;
         $this->removeInserted();
@@ -173,7 +181,7 @@ class Db extends \Codeception\Module implements \Codeception\Lib\Interfaces\Db
             try {
                 $this->driver->deleteQuery($insertId['table'], $insertId['id'], $insertId['primary']);
             } catch (\Exception $e) {
-                $this->debug("coudn\'t delete record {$insertId['id']} from {$insertId['table']}");
+                $this->debug("coudn't delete record {$insertId['id']} from {$insertId['table']}");
             }
         }
         $this->insertedIds = [];
@@ -267,13 +275,13 @@ class Db extends \Codeception\Module implements \Codeception\Lib\Interfaces\Db
     public function seeInDatabase($table, $criteria = [])
     {
         $res = $this->proceedSeeInDatabase($table, 'count(*)', $criteria);
-        $this->assertGreaterThan(0, $res, 'No matching records found');
+        $this->assertGreaterThan(0, (int) $res, 'No matching records found');
     }
 
     public function dontSeeInDatabase($table, $criteria = [])
     {
         $res = $this->proceedSeeInDatabase($table, 'count(*)', $criteria);
-        $this->assertLessThan(1, $res);
+        $this->assertLessThan(1, (int) $res);
     }
 
     protected function proceedSeeInDatabase($table, $column, $criteria)

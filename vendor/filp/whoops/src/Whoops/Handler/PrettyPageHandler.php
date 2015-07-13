@@ -73,6 +73,7 @@ class PrettyPageHandler extends Handler
         "textmate" => "txmt://open?url=file://%file&line=%line",
         "emacs"    => "emacs://open?url=file://%file&line=%line",
         "macvim"   => "mvim://open/?url=file://%file&line=%line",
+        "phpstorm" => "phpstorm://open?file=%file&line=%line",
     );
 
     /**
@@ -116,7 +117,7 @@ class PrettyPageHandler extends Handler
         // @todo: Make this more dynamic
         $helper = new TemplateHelper();
 
-        $templateFile = $this->getResource("views/layouts.html.php");
+        $templateFile = $this->getResource("views/layout.html.php");
         $cssFile      = $this->getResource("css/whoops.base.css");
         $zeptoFile    = $this->getResource("js/zepto.min.js");
         $jsFile       = $this->getResource("js/whoops.base.js");
@@ -135,7 +136,7 @@ class PrettyPageHandler extends Handler
             $code = Misc::translateErrorCode($inspector->getException()->getSeverity());
         }
 
-        // List of variables that will be passed to the layouts template.
+        // List of variables that will be passed to the layout template.
         $vars = array(
             "page_title" => $this->getPageTitle(),
 
@@ -161,12 +162,12 @@ class PrettyPageHandler extends Handler
             "handlers"       => $this->getRun()->getHandlers(),
 
             "tables"      => array(
-                "Server/Request Data"   => $_SERVER,
                 "GET Data"              => $_GET,
                 "POST Data"             => $_POST,
                 "Files"                 => $_FILES,
                 "Cookies"               => $_COOKIE,
                 "Session"               => isset($_SESSION) ? $_SESSION :  array(),
+                "Server/Request Data"   => $_SERVER,
                 "Environment Variables" => $_ENV,
             ),
         );

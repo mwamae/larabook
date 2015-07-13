@@ -55,7 +55,7 @@ an array of credentials.
  
 Opens web page by action name
 
-```php
+``` php
 <?php
 $I->amOnAction('PostsController@index');
 ?>
@@ -85,13 +85,13 @@ $I->amOnPage('/register');
  
 Opens web page using route name and parameters.
 
-```php
+``` php
 <?php
 $I->amOnRoute('posts.create');
 ?>
 ```
 
- * `param` $route
+ * `param` $routeName
  * `param array` $params
 
 
@@ -591,7 +591,7 @@ $I->seeCookie('PHPSESSID');
  
 Checks that current url matches action
 
-```php
+``` php
 <?php
 $I->seeCurrentActionIs('PostsController@index');
 ?>
@@ -605,7 +605,7 @@ $I->seeCurrentActionIs('PostsController@index');
  
 Checks that current url matches route
 
-```php
+``` php
 <?php
 $I->seeCurrentRouteIs('posts.index');
 ?>
@@ -688,8 +688,7 @@ $I->seeFormErrorMessage('username', 'Invalid Username');
  
 Assert that specific form error messages are set in the view.
 
-Useful for validation messages and generally messages array
- e.g.
+Useful for validation messages e.g.
  return `Redirect::to('register')->withErrors($validator);`
 
 Example of Usage
@@ -704,7 +703,13 @@ $I->seeFormErrorMessages(array('username'=>'Invalid Username'));
 
 ### seeFormHasErrors
  
-Assert that the form errors are bound to the View.
+Assert that form errors are bound to the View.
+
+``` php
+<?php
+$I->seeFormHasErrors();
+?>
+```
 
 @return bool
 
@@ -810,7 +815,14 @@ $I->seeInFormFields('//form[@id=my-form]', $form);
 
 ### seeInSession
  
-Assert that the session has a given list of values.
+Assert that a session variable exists.
+
+``` php
+<?php
+$I->seeInSession('key');
+$I->seeInSession('key', 'value');
+?>
+```
 
  * `param`  string|array $key
  * `param`  mixed $value
@@ -888,7 +900,9 @@ Asserts that current page has 404 response status code.
 Checks that record exists in database.
 
 ``` php
+<?php
 $I->seeRecord('users', array('name' => 'davert'));
+?>
 ```
 
  * `param` $tableName
@@ -906,6 +920,13 @@ Checks that response code is equal to value provided.
 ### seeSessionHasValues
  
 Assert that the session has a given list of values.
+
+``` php
+<?php
+$I->seeSessionHasValues(['key1', 'key2']);
+$I->seeSessionHasValues(['key1' => 'value1', 'key2' => 'value2']);
+?>
+```
 
  * `param`  array $bindings
 @return void
@@ -1009,8 +1030,8 @@ $I->setCookie('PHPSESSID', 'el4ukv0kqbvoirg7nkp4dncpk3');
 
 ### submitForm
  
-Submits the given form on the page, optionally with the given form values.
-Give the form fields values as an array.
+Submits the given form on the page, optionally with the given form
+values.  Give the form fields values as an array.
 
 Skipped fields will be filled by their values from the page.
 You don't need to click the 'Submit' button afterwards.
@@ -1025,9 +1046,15 @@ Examples:
 
 ``` php
 <?php
-$I->submitForm('#login', array('login' => 'davert', 'password' => '123456'));
+$I->submitForm('#login', [
+    'login' => 'davert',
+    'password' => '123456'
+]);
 // or
-$I->submitForm('#login', array('login' => 'davert', 'password' => '123456'), 'submitButtonName');
+$I->submitForm('#login', [
+    'login' => 'davert',
+    'password' => '123456'
+], 'submitButtonName');
 
 ```
 
@@ -1035,10 +1062,17 @@ For example, given this sample "Sign Up" form:
 
 ``` html
 <form action="/sign_up">
-    Login: <input type="text" name="user[login]" /><br/>
-    Password: <input type="password" name="user[password]" /><br/>
-    Do you agree to out terms? <input type="checkbox" name="user[agree]" /><br/>
-    Select pricing plan <select name="plan"><option value="1">Free</option><option value="2" selected="selected">Paid</option></select>
+    Login:
+    <input type="text" name="user[login]" /><br/>
+    Password:
+    <input type="password" name="user[password]" /><br/>
+    Do you agree to out terms?
+    <input type="checkbox" name="user[agree]" /><br/>
+    Select pricing plan:
+    <select name="plan">
+        <option value="1">Free</option>
+        <option value="2" selected="selected">Paid</option>
+    </select>
     <input type="submit" name="submitButton" value="Submit" />
 </form>
 ```
@@ -1047,17 +1081,36 @@ You could write the following to submit it:
 
 ``` php
 <?php
-$I->submitForm('#userForm', array('user' => array('login' => 'Davert', 'password' => '123456', 'agree' => true)), 'submitButton');
-
+$I->submitForm(
+    '#userForm',
+    [
+        'user' => [
+            'login' => 'Davert',
+            'password' => '123456',
+            'agree' => true
+        ]
+    ],
+    'submitButton'
+);
 ```
-Note that "2" will be the submitted value for the "plan" field, as it is the selected option.
+Note that "2" will be the submitted value for the "plan" field, as it is
+the selected option.
 
-You can also emulate a JavaScript submission by not specifying any buttons in the third parameter to submitForm.
+You can also emulate a JavaScript submission by not specifying any
+buttons in the third parameter to submitForm.
 
 ```php
 <?php
-$I->submitForm('#userForm', array('user' => array('login' => 'Davert', 'password' => '123456', 'agree' => true)));
-
+$I->submitForm(
+    '#userForm',
+    [
+        'user' => [
+            'login' => 'Davert',
+            'password' => '123456',
+            'agree' => true
+        ]
+    ]
+);
 ```
 
 Pair this with seeInFormFields for quick testing magic.
@@ -1102,8 +1155,31 @@ $I->submitForm('#my-form', [
 ?>
 ```
 
-Mixing string and boolean values for a checkbox's value is not
-supported and may produce unexpected results.
+Mixing string and boolean values for a checkbox's value is not supported
+and may produce unexpected results.
+
+Field names ending in "[]" must be passed without the trailing square 
+bracket characters, and must contain an array for its value.  This allows
+submitting multiple values with the same name, consider:
+
+```php
+$I->submitForm('#my-form', [
+    'field[]' => 'value',
+    'field[]' => 'another value', // 'field[]' is already a defined key
+]);
+```
+
+The solution is to pass an array value:
+
+```php
+// this way both values are submitted
+$I->submitForm('#my-form', [
+    'field' => [
+        'value',
+        'another value',
+    ]
+]);
+```
 
  * `param` $selector
  * `param` $params
